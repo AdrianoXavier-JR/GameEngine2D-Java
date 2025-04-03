@@ -10,14 +10,9 @@ import java.io.IOException;
 public class Player {
     private int x, y;
     private int speed = 5;
-    private boolean left, right;
-    private boolean jumping = false;
-    private int jumpPower = 15;
-    private int gravity = 1;
-    private int velocityY = 0;
+    private boolean left, right, up, down;
     private BufferedImage sprite;
     private final int WIDTH = 40, HEIGHT = 40;
-    private final int FLOOR_Y = 760;
 
     public Player(int x, int y) {
         this.x = x;
@@ -28,7 +23,7 @@ public class Player {
     private void loadSprite() {
         try {
             BufferedImage original = ImageIO.read(new File("res/player.png"));
-            sprite = resizeImage(original, WIDTH, HEIGHT);
+            sprite = resizeImage(original, WIDTH, HEIGHT); 
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,17 +41,8 @@ public class Player {
     public void update(int screenWidth, int screenHeight) {
         if (left && x > 0) x -= speed;
         if (right && x < screenWidth - WIDTH) x += speed;
-
-
-        velocityY += gravity;
-        y += velocityY;
-
-
-        if (y >= FLOOR_Y) {
-            y = FLOOR_Y;
-            velocityY = 0;
-            jumping = false;
-        }
+        if (up && y > 0) y -= speed;
+        if (down && y < screenHeight - HEIGHT) y += speed;
     }
 
     public void draw(Graphics g) {
@@ -66,16 +52,14 @@ public class Player {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) left = true;
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) right = true;
-
-
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && !jumping) {
-            jumping = true;
-            velocityY = -jumpPower;
-        }
+        if (e.getKeyCode() == KeyEvent.VK_UP) up = true;
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) down = true;
     }
 
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) left = false;
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) right = false;
+        if (e.getKeyCode() == KeyEvent.VK_UP) up = false;
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) down = false;
     }
 }
