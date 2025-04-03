@@ -23,7 +23,7 @@ public class Player {
     private void loadSprite() {
         try {
             BufferedImage original = ImageIO.read(new File("res/player.png"));
-            sprite = resizeImage(original, WIDTH, HEIGHT); // Redimensiona para 40x40 pixels
+            sprite = resizeImage(original, WIDTH, HEIGHT); 
         } catch (IOException e) {
             e.printStackTrace();
         }
