@@ -8,14 +8,14 @@ import java.awt.event.KeyListener;
 public class Game extends JPanel implements Runnable, KeyListener {
     private boolean running = false;
     private Thread gameThread;
-    private final int WIDTH = 1550, HEIGHT = 800;
+    private final int WIDTH = 1550, HEIGHT = 815;
     private Player player;
 
     public Game() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         addKeyListener(this);
-        player = new Player(100, 100);
+        player = new Player(100, 600);
     }
 
     public void start() {
@@ -46,6 +46,11 @@ public class Game extends JPanel implements Runnable, KeyListener {
         super.paintComponent(g);
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);
+
+
+        g.setColor(Color.GREEN);
+        g.fillRect(0, HEIGHT - 40, WIDTH, 50);
+
         player.draw(g);
     }
 
