@@ -12,12 +12,12 @@ public class Player {
     private int speed = 5;
     private boolean left, right;
     private boolean jumping = false;
-    private int jumpPower = 15; // Aumentei o poder do pulo para melhor resposta
+    private int jumpPower = 15;
     private int gravity = 1;
     private int velocityY = 0;
     private BufferedImage sprite;
     private final int WIDTH = 40, HEIGHT = 40;
-    private final int FLOOR_Y = 760; // Chão fixo
+    private final int FLOOR_Y = 760;
 
     public Player(int x, int y) {
         this.x = x;
@@ -47,11 +47,11 @@ public class Player {
         if (left && x > 0) x -= speed;
         if (right && x < screenWidth - WIDTH) x += speed;
 
-        // Aplicando gravidade
+
         velocityY += gravity;
         y += velocityY;
 
-        // Impedindo o personagem de cair além do chão
+
         if (y >= FLOOR_Y) {
             y = FLOOR_Y;
             velocityY = 0;
@@ -67,10 +67,10 @@ public class Player {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) left = true;
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) right = true;
 
-        // Pulo corrigido
+
         if (e.getKeyCode() == KeyEvent.VK_SPACE && !jumping) {
             jumping = true;
-            velocityY = -jumpPower; // A força do pulo agora é maior
+            velocityY = -jumpPower;
         }
     }
 
