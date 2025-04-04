@@ -4,18 +4,29 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 public class Game extends JPanel implements Runnable, KeyListener {
     private boolean running = false;
     private Thread gameThread;
-    private final int WIDTH = 1550, HEIGHT = 815;
+    private final int WIDTH = 1550, HEIGHT = 810;
     private Player player;
+    private ArrayList<Rectangle> platforms;
 
     public Game() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         addKeyListener(this);
         player = new Player(100, 600);
+        setupPlatforms();
+    }
+
+    private void setupPlatforms() {
+        platforms = new ArrayList<>();
+        platforms.add(new Rectangle(0, HEIGHT - 50, WIDTH, 50));
+        platforms.add(new Rectangle(200, 600, 200, 20));
+        platforms.add(new Rectangle(500, 450, 200, 20));
+        platforms.add(new Rectangle(800, 300, 200, 20));
     }
 
     public void start() {
@@ -38,7 +49,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
     }
 
     public void update() {
-        player.update(WIDTH, HEIGHT);
+        player.update(WIDTH, HEIGHT, platforms);
     }
 
     @Override
@@ -47,9 +58,10 @@ public class Game extends JPanel implements Runnable, KeyListener {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
-
         g.setColor(Color.GREEN);
-        g.fillRect(0, HEIGHT - 40, WIDTH, 50);
+        for (Rectangle platform : platforms) {
+            g.fillRect(platform.x, platform.y, platform.width, platform.height);
+        }
 
         player.draw(g);
     }

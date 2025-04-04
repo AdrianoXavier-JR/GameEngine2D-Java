@@ -6,18 +6,18 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Player {
     private int x, y;
     private int speed = 5;
     private boolean left, right;
     private boolean jumping = false;
-    private int jumpPower = 15;
+    private int jumpPower = 20;
     private int gravity = 1;
     private int velocityY = 0;
     private BufferedImage sprite;
     private final int WIDTH = 40, HEIGHT = 40;
-    private final int FLOOR_Y = 760;
 
     public Player(int x, int y) {
         this.x = x;
@@ -43,19 +43,32 @@ public class Player {
         return resized;
     }
 
-    public void update(int screenWidth, int screenHeight) {
+    public void update(int screenWidth, int screenHeight, ArrayList<Rectangle> platforms) {
         if (left && x > 0) x -= speed;
         if (right && x < screenWidth - WIDTH) x += speed;
-
 
         velocityY += gravity;
         y += velocityY;
 
 
-        if (y >= FLOOR_Y) {
-            y = FLOOR_Y;
-            velocityY = 0;
-            jumping = false;
+        boolean onGround = false;
+        Rectangle playerRect = new Rectangle(x, y, WIDTH, HEIGHT);
+        for (Rectangle platform : platforms) {
+            if (playerRect.intersects(platform)) {
+                Rectangle intersection = playerRect.intersection(platform);
+
+
+                if (intersection.height < HEIGHT && velocityY >= 0 && y + HEIGHT - intersection.height <= platform.y) {
+                    y = platform.y - HEIGHT;
+                    velocityY = 0;
+                    jumping = false;
+                    onGround = true;
+                }
+            }
+        }
+
+        if (!onGround) {
+            jumping = true;
         }
     }
 
@@ -66,7 +79,6 @@ public class Player {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) left = true;
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) right = true;
-
 
         if (e.getKeyCode() == KeyEvent.VK_SPACE && !jumping) {
             jumping = true;
