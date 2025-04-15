@@ -13,6 +13,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
     private Player player;
     private ArrayList<Rectangle> platforms;
     private ArrayList<Coin> coins;
+    private ArrayList<Enemy> enemies; // Lista de inimigos
     private int lives = 3;
     private boolean gameOver = false;
     private boolean gameWon = false;
@@ -41,6 +42,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
     private void setupLevel(int level) {
         platforms = new ArrayList<>();
         coins = new ArrayList<>();
+        enemies = new ArrayList<>(); // Inicializa os inimigos
 
         platforms.add(new Rectangle(0, HEIGHT - 50, WIDTH, 50)); // Chão
 
@@ -52,6 +54,10 @@ public class Game extends JPanel implements Runnable, KeyListener {
             coins.add(new Coin(250, 560));
             coins.add(new Coin(550, 410));
             coins.add(new Coin(850, 260));
+
+            // Adicionando inimigos menores e mais rápidos no nível 1
+            enemies.add(new Enemy(300, 580, 30, 30, 4)); // Inimigo menor e mais rápido
+            enemies.add(new Enemy(600, 430, 30, 30, 5)); // Outro inimigo menor e mais rápido
         } else if (level == 2) {
             platforms.add(new Rectangle(300, 550, 150, 20));
             platforms.add(new Rectangle(600, 400, 150, 20));
@@ -60,6 +66,10 @@ public class Game extends JPanel implements Runnable, KeyListener {
             coins.add(new Coin(320, 510));
             coins.add(new Coin(620, 360));
             coins.add(new Coin(920, 210));
+
+            // Adicionando inimigos menores e mais rápidos no nível 2
+            enemies.add(new Enemy(350, 530, 30, 30, 5));
+            enemies.add(new Enemy(650, 380, 30, 30, 6));
         }
 
         Rectangle firstPlatform = platforms.get(1);
@@ -98,14 +108,13 @@ public class Game extends JPanel implements Runnable, KeyListener {
         if (!gameOver && !gameWon) {
             player.update(WIDTH, HEIGHT, platforms);
 
-            // Detecta colisão com o chão em toda sua extensão
             Rectangle ground = platforms.get(0);
             Rectangle playerBounds = player.getBounds();
+
+            // Detecta colisão com o chão
             if (playerBounds.y + playerBounds.height >= ground.y &&
                     playerBounds.x + playerBounds.width > ground.x &&
                     playerBounds.x < ground.x + ground.width) {
-
-                System.out.println("Jogador tocou o chão!"); // Debug para verificar a colisão
                 lives--;
                 if (lives <= 0) {
                     gameOver = true;
@@ -116,8 +125,26 @@ public class Game extends JPanel implements Runnable, KeyListener {
                 }
             }
 
+            // Remove moedas coletadas
             coins.removeIf(coin -> coin.getBounds().intersects(player.getBounds()));
 
+            // Atualiza inimigos e verifica colisão com o jogador
+            for (Enemy enemy : enemies) {
+                enemy.update(WIDTH);
+                if (enemy.getBounds().intersects(playerBounds)) {
+                    System.out.println("Colisão com inimigo detectada!");
+                    lives--; // Perde uma vida ao colidir com um inimigo
+                    if (lives <= 0) {
+                        gameOver = true;
+                        restartButton.setVisible(true);
+                    } else {
+                        Rectangle firstPlatform = platforms.get(1);
+                        player.respawn(firstPlatform.x + 10, firstPlatform.y - player.getHeight());
+                    }
+                }
+            }
+
+            // Passa para o próximo nível se todas as moedas forem coletadas
             if (coins.isEmpty()) {
                 level++;
                 if (level > 2) {
@@ -148,6 +175,10 @@ public class Game extends JPanel implements Runnable, KeyListener {
 
         for (Coin coin : coins) {
             coin.draw(g);
+        }
+
+        for (Enemy enemy : enemies) {
+            enemy.draw(g); // Desenha os inimigos na tela
         }
 
         player.draw(g);
