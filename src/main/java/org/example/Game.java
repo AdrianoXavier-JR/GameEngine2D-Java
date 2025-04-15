@@ -42,8 +42,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
         platforms = new ArrayList<>();
         coins = new ArrayList<>();
 
-
-        platforms.add(new Rectangle(0, HEIGHT - 50, WIDTH, 50));
+        platforms.add(new Rectangle(0, HEIGHT - 50, WIDTH, 50)); // Chão
 
         if (level == 1) {
             platforms.add(new Rectangle(200, 600, 200, 20));
@@ -99,8 +98,14 @@ public class Game extends JPanel implements Runnable, KeyListener {
         if (!gameOver && !gameWon) {
             player.update(WIDTH, HEIGHT, platforms);
 
+            // Detecta colisão com o chão em toda sua extensão
             Rectangle ground = platforms.get(0);
-            if (player.getBounds().intersects(ground)) {
+            Rectangle playerBounds = player.getBounds();
+            if (playerBounds.y + playerBounds.height >= ground.y &&
+                    playerBounds.x + playerBounds.width > ground.x &&
+                    playerBounds.x < ground.x + ground.width) {
+
+                System.out.println("Jogador tocou o chão!"); // Debug para verificar a colisão
                 lives--;
                 if (lives <= 0) {
                     gameOver = true;
@@ -132,8 +137,12 @@ public class Game extends JPanel implements Runnable, KeyListener {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
+        g.setColor(new Color(139, 69, 19)); // Marrom para o chão
+        g.fillRect(0, HEIGHT - 50, WIDTH, 50);
+
         g.setColor(Color.GRAY);
-        for (Rectangle platform : platforms) {
+        for (int i = 1; i < platforms.size(); i++) { // Ignora o chão (índice 0)
+            Rectangle platform = platforms.get(i);
             g.fillRect(platform.x, platform.y, platform.width, platform.height);
         }
 
@@ -150,7 +159,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
         if (gameOver) {
             g.setFont(new Font("Arial", Font.BOLD, 48));
             g.setColor(Color.RED);
-            g.drawString("Game Over", WIDTH / 2 - 150, HEIGHT / 2 - 20);
+            g.drawString("Fim de Jogo", WIDTH / 2 - 150, HEIGHT / 2 - 20);
         } else if (gameWon) {
             g.setFont(new Font("Arial", Font.BOLD, 48));
             g.setColor(Color.YELLOW);
